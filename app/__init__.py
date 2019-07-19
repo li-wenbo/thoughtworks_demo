@@ -27,7 +27,7 @@ DEFAULT_ENV = 'dev'
 
 def create_app(env):
     app = Flask(__name__)
-    app.config.from_object(config_map.get(env))
+    app.config.from_object(config_map.get(env, config.DevelopmentConfig))
     return app
 
 
@@ -40,7 +40,7 @@ def init_filehandler_logger(app, log_level, filename='flask.log'):
     """
 
     import os.path
-    log_filename = os.path.join(app.root_path, app.LOGDIR, filename)
+    log_filename = os.path.join(app.root_path, app.config['LOGDIR'], filename)
 
     logger = logging.getLogger(app.name)
     logger.setLevel(log_level)

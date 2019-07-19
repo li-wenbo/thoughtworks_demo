@@ -17,14 +17,14 @@ ARG gid=1000
 RUN addgroup --gid ${gid} ${group} \
     && adduser --uid ${uid} --gid ${gid} --disabled-password --disabled-login --gecos '' --home /var/lib/${user} ${user}
 
-RUN mkdir -p logs && chown -R ${uid}:${gid} /app
+RUN mkdir -p logs && mkdir -p app/logs && chown -R ${uid}:${gid} /app
 
 USER ${user}
 
-# Make port 80 available to the world outside this container
-EXPOSE 8888
+# Make port 8080 available to the world outside this container
+EXPOSE 8080
 
 # Run app.py when the container launches
-CMD ["gunicorn", "-c", "gunicorn_conf.py", "main:app"]
+CMD ["gunicorn", "-c", "gunicorn_conf.py", "server:app"]
 
 

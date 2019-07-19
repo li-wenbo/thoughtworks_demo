@@ -4,7 +4,7 @@ import os
 # server
 pidfile = 'gun.pid'
 backlog = 512
-bind = "0.0.0.0:{port}".format(port=os.environ.get('HTTP_PORT', 8080))
+bind = "0.0.0.0:8080"
 
 # log
 access_log_format = '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s" %(L)s ' \
