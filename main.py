@@ -9,7 +9,8 @@ init_logger(app)
 
 @app.route('/')
 def index():
-    return 'hello world!'
+    return 'hello world! {}'.format(app.config.get('ENV', ''))
+
 
 if __name__ == '__main__':
     app.run(debug=True)
