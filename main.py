@@ -1,6 +1,6 @@
 #! *-* utf-8 *-*
 from app import create_app, init_logger
-from flask import render_template
+from flask import render_template, request
 import requests
 
 app = create_app(__name__)
