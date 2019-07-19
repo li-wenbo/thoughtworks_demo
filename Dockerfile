@@ -25,6 +25,6 @@ USER ${user}
 EXPOSE 8888
 
 # Run app.py when the container launches
-ENTRYPOINT ["gunicorn", "-c", "gunicorn_conf.py", "main:app"]
+CMD ["gunicorn", "-c", "gunicorn_conf.py", "main:app"]
 
 

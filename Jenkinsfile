@@ -1,25 +1,26 @@
 pipeline {
-  agent any
+    agent none
 
-  environment {
-    // FOO will be available in entire pipeline
-    FOO = "PIPELINE"
-  }
+    stages {
+        stage('dev') {
+            agent any
+            steps {
+                echo 'in dev'
+            }
+        }
 
-  stages {
-    stage("local") {
-      environment {
-        // BAR will only be available in this stage
-        BAR = "STAGE"
-      }
-      steps {
-        sh 'echo "FOO is $FOO and BAR is $BAR"'
-      }
+        stage('test') {
+            agent any
+            steps {
+                echo 'in test'
+            }
+        }
+
+        stage('deploy') {
+            agent any
+            steps {
+                echo 'in deploy'
+            }
+        }
     }
-    stage("global") {
-      steps {
-        sh 'echo "FOO is $FOO and BAR is $BAR"'
-      }
-    }
-  }
 }
