@@ -2,10 +2,10 @@ pipeline {
     agent none
 
     parameters {
-        booleanParam defaultValue: true, description: 'is we are running the testing', name: 'Testing'
         string defaultValue: 'latest', description: 'the repo version we want to', name: 'tag', trim: false
         string defaultValue: '8080', description: 'the http_port web server will listen on', name: 'HTTP_PORT', trim: false
         string defaultValue: '8080', description: 'the publish port http_port', name: 'HTTP_PUBLISH_PORT', trim: false
+        string defaultValue: 'test', description: 'should be one of "production, dev, test", or the test default', name: 'ENVIRON', trim: false
     }
 
     environment {
@@ -42,7 +42,7 @@ pipeline {
         stage('build the image') {
             agent any
             environment {
-                BUILD_ARGS = "--build-arg HTTP_PORT=${params.HTTP_PORT}"
+                BUILD_ARGS = "--build-arg HTTP_PORT=${params.HTTP_PORT} --build-arg ENVIRON=${params.ENVIRON}"
             }
 
             steps {

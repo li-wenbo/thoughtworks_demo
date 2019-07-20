@@ -13,7 +13,7 @@ import os
 
 from app import create_app, init_filehandler_logger, DEFAULT_ENV
 
-env = os.environ.get('ENV', DEFAULT_ENV).lower()
+env = os.environ.get('ENVIRON', DEFAULT_ENV).lower()
 
 app = create_app(env)
 init_filehandler_logger(app, logging.DEBUG)
