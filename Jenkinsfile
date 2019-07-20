@@ -61,18 +61,10 @@ pipeline {
         }
 
         stage('deploy') {
-            agent {
-              docker {
-                alwaysPull true
-                args "-p ${params.HTTP_PORT}:8080"
-                image "${RegistryEndpoint}/${env.JOB_NAME}:${params.tag}"
-                registryCredentialsId "$RegistryURLCID"
-                registryUrl "$RegistryURL"
-              }
-            }
+            agent any
 
             steps {
-                echo 'in deploy'
+                sh "docker run --rm -p ${params.HTTP_PORT}:8080 ${RegistryEndpoint}/${env.JOB_NAME}:${params.tag}"
             }
         }
 
