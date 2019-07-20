@@ -8,8 +8,9 @@ pipeline {
     }
 
     environment {
-        RegistryURL = "https://registry.cn-hangzhou.aliyuncs.com"
-        RegistryURLCID = "4f97170a-5618-4d63-a7a0-761b425b7970"
+        RegistryEndpoint = 'registry.cn-hangzhou.aliyuncs.com'
+        RegistryURL = "https://$RegistryEndpoint"
+        RegistryURLCID = '4f97170a-5618-4d63-a7a0-761b425b7970'
     }
 
     stages {
@@ -27,36 +28,54 @@ pipeline {
 
         stage('test') {
             agent any
-            environment {
-                BUILD_ARGS = "--build-arg HTTP_PORT=${params.HTTP_PORT}"
-            }
 
             when {
                 branch 'testing'
             }
 
             steps {
+                echo 'in testing'
+            }
+        }
 
-                echo 'oops'
+        stage('build the image') {
+            agent any
+            environment {
+                BUILD_ARGS = "--build-arg HTTP_PORT=${params.HTTP_PORT}"
+            }
+
+            steps {
+
                 script {
                     docker.withRegistry("$RegistryURL", "$RegistryURLCID") {
-                        def customImage = docker.build("$env.JOB_NAME:latest", "$BUILD_ARGS .")
-                        customImage.push 'latest'
+                        def customImage = docker.build("${env.JOB_NAME}:${params.tag}", "$BUILD_ARGS .")
+
+                        def imageid = customImage.id
+                        def rv = sh returnStatus: true, script: "docker run --rm $imageid python test_flask.py"
+                        if (rv == 0) {
+                            customImage.push "${params.tag}"
+                        }
                     }
                 }
             }
         }
 
         stage('deploy') {
-            agent any
-
-            when {
-                branch 'master'
+            agent {
+              docker {
+                alwaysPull true
+                args "-p 8080:${params.HTTP_PORT}"
+                image "${RegistryEndpoint}/${env.JOB_NAME}:${params.tag}"
+                registryCredentialsId "$RegistryURLCID"
+                registryUrl "$RegistryURL"
+              }
             }
 
             steps {
                 echo 'in deploy'
             }
         }
+
+
     }
 }
