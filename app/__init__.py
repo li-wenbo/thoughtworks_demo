@@ -22,7 +22,7 @@ config_map = {
     'test': config.TestingConfig,
 }
 
-DEFAULT_ENV = 'dev'
+DEFAULT_ENV = 'test'
 
 
 def create_app(env):
