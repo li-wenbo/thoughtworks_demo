@@ -5,7 +5,6 @@ pipeline {
         string defaultValue: 'latest', description: 'the repo version we want to', name: 'tag', trim: false
         string defaultValue: '8080', description: 'the http_port web server will listen on', name: 'HTTP_PORT', trim: false
         string defaultValue: '8080', description: 'the publish port http_port', name: 'HTTP_PUBLISH_PORT', trim: false
-        string defaultValue: 'test', description: 'should be one of "production, dev, test", or the test default', name: 'ENVIRON', trim: false
     }
 
     environment {
@@ -42,7 +41,7 @@ pipeline {
         stage('build the image') {
             agent any
             environment {
-                BUILD_ARGS = "--build-arg HTTP_PORT=${params.HTTP_PORT} --build-arg ENVIRON=${params.ENVIRON}"
+                BUILD_ARGS = "--build-arg HTTP_PORT=${params.HTTP_PORT}"
             }
 
             steps {
@@ -65,7 +64,7 @@ pipeline {
             agent any
 
             steps {
-                sh "docker run -d --rm -p ${params.HTTP_PUBLISH_PORT}:${params.HTTP_PORT} ${RegistryEndpoint}/${env.JOB_NAME}:${params.tag}"
+                sh "docker run -d --rm -e 'ENVIRON=${env.BRANCH_NAME}' -p ${params.HTTP_PUBLISH_PORT}:${params.HTTP_PORT} ${RegistryEndpoint}/${env.JOB_NAME}:${params.tag}"
             }
         }
 
