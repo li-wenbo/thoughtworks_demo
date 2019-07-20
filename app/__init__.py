@@ -33,6 +33,18 @@ DEFAULT_ENV = TEST_BRANCH_NAME
 def create_app(env):
     app = Flask(__name__)
     app.config.from_object(config_map.get(env, config.DevelopmentConfig))
+
+    state = DEFAULT_ENV
+    if not app.config['DEBUG'] and not app.config['TESTING']:
+        state = PRODUCTION_BRANCH_NAME
+
+    if app.config['DEBUG']:
+        state = DEV_BRANCH_NAME
+
+    if app.config['TESTING']:
+        state = TEST_BRANCH_NAME
+
+    app.env = state
     return app
 
 

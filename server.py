@@ -13,8 +13,7 @@ import os
 
 from flask import current_app
 
-from app import create_app, init_filehandler_logger, DEFAULT_ENV, PRODUCTION_BRANCH_NAME, DEV_BRANCH_NAME, \
-    TEST_BRANCH_NAME
+from app import create_app, init_filehandler_logger, DEFAULT_ENV
 
 env = os.environ.get('ENVIRON', DEFAULT_ENV).lower()
 
@@ -29,25 +28,13 @@ def index():
 
 class StateApp(object):
     def __init__(self, app):
-
-        state = DEFAULT_ENV
-        if not app.config['DEBUG'] and not app.config['TESTING']:
-            state = PRODUCTION_BRANCH_NAME
-
-        if app.config['DEBUG']:
-            state = DEV_BRANCH_NAME
-
-        if app.config['TESTING']:
-            state = TEST_BRANCH_NAME
-
-        app.env = state
         self.app = app
 
     def __call__(self, environ, start_response):
         return self.app(environ, start_response)
 
 
-app.wsgi_app = StateApp(app)
+app.wsgi_app = StateApp(app.wsgi_app)
 
 if __name__ == '__main__':
     app.run(debug=True)
