@@ -5,6 +5,7 @@ pipeline {
         booleanParam defaultValue: true, description: 'is we are running the testing', name: 'Testing'
         string defaultValue: 'latest', description: 'the repo version we want to', name: 'tag', trim: false
         string defaultValue: '8080', description: 'the http_port web server will listen on', name: 'HTTP_PORT', trim: false
+        string defaultValue: '8080', description: 'the publish port http_port', name: 'HTTP_PUBLISH_PORT', trim: false
     }
 
     environment {
@@ -64,7 +65,7 @@ pipeline {
             agent any
 
             steps {
-                sh "docker run --rm -p ${params.HTTP_PORT}:8080 ${RegistryEndpoint}/${env.JOB_NAME}:${params.tag}"
+                sh "docker run -d --rm -p ${params.HTTP_PUBLISH_PORT}:${params.HTTP_PORT} ${RegistryEndpoint}/${env.JOB_NAME}:${params.tag}"
             }
         }
 
