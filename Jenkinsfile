@@ -64,7 +64,7 @@ pipeline {
             agent {
               docker {
                 alwaysPull true
-                args "-p 8080:${params.HTTP_PORT}"
+                args "-p ${params.HTTP_PORT}:8080"
                 image "${RegistryEndpoint}/${env.JOB_NAME}:${params.tag}"
                 registryCredentialsId "$RegistryURLCID"
                 registryUrl "$RegistryURL"
