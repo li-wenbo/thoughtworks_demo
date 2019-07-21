@@ -5,5 +5,8 @@ COPY app/static/favicon.ico /usr/share/nginx/html
 COPY app/static/index.html /usr/share/nginx/html
 
 # cp server conf into nginx
-COPY nginx.conf.d/* /etc/nginx/conf.d
+COPY nginx.conf.d/* /etc/nginx/conf.d/
+
+ARG APP_NAME
+RUN sed -ie "s#http://app:8080#http://${APP_NAME}:8080#g" /etc/nginx/conf.d/*
 

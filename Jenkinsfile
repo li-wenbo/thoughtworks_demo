@@ -78,7 +78,7 @@ pipeline {
         stage('build the proxy image') {
             agent any
             environment {
-                BUILD_ARGS = "-f Dockerfile.nginx"
+                BUILD_ARGS = "--build-arg APP_NAME=${app_name} -f Dockerfile.nginx"
             }
 
             steps {
@@ -117,7 +117,7 @@ pipeline {
                 sh "docker run -d --rm -e 'ENVIRON=${env.BRANCH_NAME}' --network=oops --name ${app_name} ${RegistryEndpoint}/${AppImageName}"
 
 
-                sleep 3
+                sleep 1
                 // create proxy container
                 sh "docker run -d --rm -p ${params.HTTP_PUBLISH_PORT}:80 --network=oops --name ${proxy_name} ${RegistryEndpoint}/${ProxyImageName}"
             }
