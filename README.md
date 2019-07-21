@@ -1,11 +1,28 @@
 # thoughtworks_demo
-thoughtworks demo used by Python Flask
+
+* Python Flask used, as i have no idea about java web
+* jenkins multibranch pipeline used
 
 
 # environment variables
-* ENV       
-    * the env the web app will catch for the different config, default running in *TEST* environment
-    * option is: 
-        * production
-        * dev
-        * test
+
+just 2 used for parameters build in jenkins
+* string defaultValue: 'latest', description: 'the repo version we want to', name: 'tag', trim: false
+* string defaultValue: '3333', description: 'the publish port for proxy container', name: 'HTTP_PUBLISH_PORT', trim: false
+
+
+# environ
+
+accord to the git repo branch name, there are 3 env
+* master (production)
+* dev
+* testing 
+
+in the app, there are 3 config class
+
+
+# the output
+
+accord to environ, there are 2 image for each, one is app, the other is proxy used for static content
+![cicd-image](https://liwb-csdn.oss-cn-hangzhou.aliyuncs.com/cicd-image.png)
+
