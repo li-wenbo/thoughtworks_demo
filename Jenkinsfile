@@ -42,15 +42,11 @@ pipeline {
 
         stage('build the app image') {
             agent any
-            environment {
-                BUILD_ARGS = ""
-            }
-
             steps {
 
                 script {
                     docker.withRegistry("$RegistryURL", "$RegistryURLCID") {
-                        def customImage = docker.build("${AppImageName}", "$BUILD_ARGS .")
+                        def customImage = docker.build("${AppImageName}")
 
                         def imageid = customImage.id
                         def rv = sh returnStatus: true, script: "docker run --rm $imageid python test_flask.py"
