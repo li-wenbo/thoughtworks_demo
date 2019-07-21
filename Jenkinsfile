@@ -97,11 +97,11 @@ pipeline {
             agent any
             steps {
                 // pre
-                sh "docker network rm ${net_name} || true"
                 sh "docker container stop ${proxy_name} || true"
                 sh "docker container rm ${proxy_name} || true"
                 sh "docker container stop ${app_name} || true"
                 sh "docker container rm ${app_name} || true"
+                sh "docker network rm ${net_name}"
             }
         }
 
