@@ -114,12 +114,12 @@ pipeline {
                 sh "docker network create ${net_name}"
 
                 // create app container
-                sh "docker run -d --rm -e 'ENVIRON=${env.BRANCH_NAME}' --network=oops --name ${app_name} ${RegistryEndpoint}/${AppImageName}"
+                sh "docker run -d --rm -e 'ENVIRON=${env.BRANCH_NAME}' --network=${net_name} --name ${app_name} ${RegistryEndpoint}/${AppImageName}"
 
 
                 sleep 1
                 // create proxy container
-                sh "docker run -d --rm -p ${params.HTTP_PUBLISH_PORT}:80 --network=oops --name ${proxy_name} ${RegistryEndpoint}/${ProxyImageName}"
+                sh "docker run -d --rm -p ${params.HTTP_PUBLISH_PORT}:80 --network=${net_name} --name ${proxy_name} ${RegistryEndpoint}/${ProxyImageName}"
             }
         }
     }
