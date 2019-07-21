@@ -1,0 +1,9 @@
+FROM nginx:mainline-alpine
+
+# cp static file into nginx
+COPY app/static/favicon.ico /usr/share/nginx/html
+COPY app/static/index.html /usr/share/nginx/html
+
+# cp server conf into nginx
+COPY nginx.conf.d/* /etc/nginx/conf.d
+

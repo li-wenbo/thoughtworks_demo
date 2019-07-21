@@ -2,14 +2,17 @@ pipeline {
     agent none
 
     parameters {
-        booleanParam defaultValue: true, description: 'is we are running the testing', name: 'Testing'
         string defaultValue: 'latest', description: 'the repo version we want to', name: 'tag', trim: false
-        string defaultValue: '8080', description: 'the http_port web server will listen on', name: 'HTTP_PORT', trim: false
+        string defaultValue: '8080', description: 'the publish port http_port', name: 'HTTP_PUBLISH_PORT', trim: false
     }
 
     environment {
-        RegistryURL = "https://registry.cn-hangzhou.aliyuncs.com"
-        RegistryURLCID = "4f97170a-5618-4d63-a7a0-761b425b7970"
+        RegistryEndpoint = 'registry.cn-hangzhou.aliyuncs.com'
+        RegistryURL = "https://${RegistryEndpoint}"
+        RegistryURLCID = '4f97170a-5618-4d63-a7a0-761b425b7970'
+
+        AppImageName = "$app-{env.JOB_NAME}:${params.tag}"
+        ProxyImageName = "proxy-${env.JOB_NAME}:${params.tag}"
     }
 
     stages {
@@ -27,35 +30,87 @@ pipeline {
 
         stage('test') {
             agent any
-            environment {
-                BUILD_ARGS = "--build-arg HTTP_PORT=${params.HTTP_PORT}"
-            }
 
             when {
                 branch 'testing'
             }
 
             steps {
+                echo 'in testing'
+            }
+        }
 
-                echo 'oops'
+        stage('build the app image') {
+            agent any
+            environment {
+                BUILD_ARGS = ""
+            }
+
+            steps {
+
                 script {
                     docker.withRegistry("$RegistryURL", "$RegistryURLCID") {
-                        def customImage = docker.build("$env.JOB_NAME:latest", "$BUILD_ARGS .")
-                        customImage.push 'latest'
+                        def customImage = docker.build("${AppImageName}", "$BUILD_ARGS .")
+
+                        def imageid = customImage.id
+                        def rv = sh returnStatus: true, script: "docker run --rm $imageid python test_flask.py"
+                        if (rv == 0) {
+                            customImage.push "${params.tag}"
+                        }
                     }
                 }
+            }
+        }
+
+
+        stage('build the proxy image') {
+            agent any
+            environment {
+                BUILD_ARGS = "-f Dockerfile.nginx"
+            }
+
+            steps {
+
+                script {
+                    docker.withRegistry("$RegistryURL", "$RegistryURLCID") {
+                        def customImage = docker.build("${ProxyImageName}", "$BUILD_ARGS .")
+
+                        def imageid = customImage.id
+                        def rv = sh returnStatus: true, script: "docker run --rm $imageid nginx -t"
+                        if (rv == 0) {
+                            customImage.push "${params.tag}"
+                        }
+                    }
+                }
+            }
+        }
+
+
+        stage('pre deploy') {
+            agent any
+            steps {
+                // pre
+                sh 'docker network rm oops || true'
+                sh 'docker container stop proxy || true'
+                sh 'docker container rm proxy || true'
+                sh 'docker container stop app || true'
+                sh 'docker container rm app || true'
             }
         }
 
         stage('deploy') {
             agent any
 
-            when {
-                branch 'master'
-            }
-
             steps {
-                echo 'in deploy'
+
+                // create docker brige network
+                sh 'docker network create oops'
+
+                // create app container
+                sh "docker run -d --rm -e 'ENVIRON=${env.BRANCH_NAME}' --network=oops --name app ${RegistryEndpoint}/${AppImageName}"
+
+                // create proxy container
+                sh "docker run -d --rm -p ${params.HTTP_PUBLISH_PORT}:80 --network=oops --name proxy ${RegistryEndpoint}/${ProxyImageName}"
             }
         }
     }
