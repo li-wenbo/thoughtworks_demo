@@ -11,8 +11,8 @@ pipeline {
         RegistryURL = "https://${RegistryEndpoint}"
         RegistryURLCID = '4f97170a-5618-4d63-a7a0-761b425b7970'
 
-        AppImageName = "$app-{env.JOB_NAME}:${params.tag}"
-        ProxyImageName = "proxy-${env.JOB_NAME}:${params.tag}"
+        AppImageName = "${env.JOB_NAME}-app:${params.tag}"
+        ProxyImageName = "${env.JOB_NAME}-proxy:${params.tag}"
     }
 
     stages {
@@ -70,12 +70,7 @@ pipeline {
                 script {
                     docker.withRegistry("$RegistryURL", "$RegistryURLCID") {
                         def customImage = docker.build("${ProxyImageName}", "$BUILD_ARGS .")
-
-                        def imageid = customImage.id
-                        def rv = sh returnStatus: true, script: "docker run --rm $imageid nginx -t"
-                        if (rv == 0) {
-                            customImage.push "${params.tag}"
-                        }
+                        customImage.push "${params.tag}"
                     }
                 }
             }
