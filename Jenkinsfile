@@ -3,7 +3,7 @@ pipeline {
 
     parameters {
         string defaultValue: 'latest', description: 'the repo version we want to', name: 'tag', trim: false
-        string defaultValue: '3333', description: 'the publish port for proxy container', name: 'HTTP_PUBLISH_PORT', trim: false
+        string defaultValue: '4444', description: 'the publish port for proxy container', name: 'HTTP_PUBLISH_PORT', trim: false
     }
 
     environment {

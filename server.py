@@ -12,7 +12,7 @@ import logging
 import os
 import sys
 
-from flask import render_template
+from flask import render_template, current_app
 
 from app import create_app, init_filehandler_logger, DEFAULT_ENV
 
@@ -24,7 +24,7 @@ init_filehandler_logger(app, logging.DEBUG)
 
 @app.route('/')
 def index():
-    return render_template('index.html', platform=sys.platform)
+    return render_template('index.html', environ=current_app.env, platform=sys.platform)
 
 
 class StateApp(object):
