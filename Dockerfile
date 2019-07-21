@@ -13,8 +13,12 @@ ARG user=gunicorn
 ARG group=gunicorn
 ARG uid=1000
 ARG gid=1000
+
 ARG HTTP_PORT=8080
 ENV HTTP_PORT ${HTTP_PORT}
+
+ARG ENVIRON=test
+ENV ENVIRON ${ENVIRON}
 
 RUN addgroup --gid ${gid} ${group} \
     && adduser --uid ${uid} --gid ${gid} --disabled-password --disabled-login --gecos '' --home /var/lib/${user} ${user}
