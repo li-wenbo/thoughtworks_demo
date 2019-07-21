@@ -15,12 +15,14 @@ import logging
 from flask import Flask
 
 from . import config
+
+
+# match the git branch
 PRODUCTION_BRANCH_NAME = 'master'
 DEV_BRANCH_NAME = 'dev'
 TEST_BRANCH_NAME = 'testing'
 
 
-# match the git branch
 config_map = {
     PRODUCTION_BRANCH_NAME: config.ProductionConfig,
     DEV_BRANCH_NAME: config.DevelopmentConfig,

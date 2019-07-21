@@ -10,8 +10,9 @@
 """
 import logging
 import os
+import sys
 
-from flask import current_app
+from flask import render_template
 
 from app import create_app, init_filehandler_logger, DEFAULT_ENV
 
@@ -23,7 +24,7 @@ init_filehandler_logger(app, logging.DEBUG)
 
 @app.route('/')
 def index():
-    return 'hello world from {}!'.format(current_app.env)
+    return render_template('index.html', platform=sys.platform)
 
 
 class StateApp(object):
