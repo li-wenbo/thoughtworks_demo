@@ -13,6 +13,10 @@ pipeline {
 
         AppImageName = "${env.JOB_NAME}-app:${params.tag}"
         ProxyImageName = "${env.JOB_NAME}-proxy:${params.tag}"
+
+        net_name = "${env.BRANCH_NAME}-net"
+        app_name = "${env.BRANCH_NAME}-app"
+        proxy_name = "${env.BRANCH_NAME}-proxy"
     }
 
     stages {
@@ -81,11 +85,11 @@ pipeline {
             agent any
             steps {
                 // pre
-                sh 'docker network rm oops || true'
-                sh 'docker container stop proxy || true'
-                sh 'docker container rm proxy || true'
-                sh 'docker container stop app || true'
-                sh 'docker container rm app || true'
+                sh "docker network rm ${${net_name} || true"
+                sh "docker container stop ${proxy_name} || true"
+                sh "docker container rm ${proxy_name} || true"
+                sh "docker container stop ${app_name} || true"
+                sh "docker container rm ${app_name} || true"
             }
         }
 
@@ -95,13 +99,13 @@ pipeline {
             steps {
 
                 // create docker brige network
-                sh 'docker network create oops'
+                sh "docker network create ${net_name}"
 
                 // create app container
-                sh "docker run -d --rm -e 'ENVIRON=${env.BRANCH_NAME}' --network=oops --name app ${RegistryEndpoint}/${AppImageName}"
+                sh "docker run -d --rm -e 'ENVIRON=${env.BRANCH_NAME}' --network=oops --name ${app_name} ${RegistryEndpoint}/${AppImageName}"
 
                 // create proxy container
-                sh "docker run -d --rm -p ${params.HTTP_PUBLISH_PORT}:80 --network=oops --name proxy ${RegistryEndpoint}/${ProxyImageName}"
+                sh "docker run -d --rm -p ${params.HTTP_PUBLISH_PORT}:80 --network=oops --name ${proxy_name} ${RegistryEndpoint}/${ProxyImageName}"
             }
         }
     }
