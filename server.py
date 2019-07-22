@@ -28,14 +28,14 @@ def index():
 
 
 class StateApp(object):
-    def __init__(self, app):
-        self.app = app
+    def __init__(self, wsgi):
+        self.wsgi = wsgi
 
     def __call__(self, environ, start_response):
-        return self.app(environ, start_response)
+        return self.wsgi(environ, start_response)
 
 
 app.wsgi_app = StateApp(app.wsgi_app)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
